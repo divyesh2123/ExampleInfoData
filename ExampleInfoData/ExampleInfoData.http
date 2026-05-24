@@ -1,0 +1,6 @@
+@ExampleInfoData_HostAddress = http://localhost:5216
+
+GET {{ExampleInfoData_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

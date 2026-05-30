@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ExampleInfoData.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/info/[action]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -16,38 +16,65 @@ namespace ExampleInfoData.Controllers
             _userService = userService;
         }
 
+        [HttpGet]
+        [Route("/getinfo-mobile")]
+        [Route("/GetInfoMobile")]
+        public async Task<IActionResult> GetInfoMobile()
+        {
+            var request = HttpContext.Request;
+
+            // Full URL
+            var fullUrl = $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
+
+            var d = await _userService.GetAsync();
+            return Ok(d);
+        }
+
+
+        // GET ALL
+        [HttpGet("{id:int}/{department:alpha:minlength(3)?}")]
+        public async Task<IActionResult> GetMyInfoData(string? department, int? id)
+        {
+            var d = await _userService.GetAsync();
+            return Ok(d);
+        }
+
+
         // GET ALL
         [HttpGet]
-        public async Task<ActionResult<List<User>>> Get()
+        public async Task<IActionResult> GetInfo()
         {
-            return await _userService.GetAsync();
+            var d= await _userService.GetAsync();
+            return Ok(d);
         }
 
         // GET BY ID
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> Get(string id)
+        public async Task<ActionResult<User>> GetInfo(string id)
         {
             var user = await _userService.GetByIdAsync(id);
 
+            var m = new { message = "not found" };
+
             if (user == null)
-                return NotFound();
+                return BadRequest(m);
 
             return user;
         }
 
         // CREATE
         [HttpPost]
-        public async Task<IActionResult> Post(User user)
+        public async Task<IActionResult> PostInfo(User user)
         {
             await _userService.CreateAsync(user);
 
-            return CreatedAtAction(nameof(Get),
+            return CreatedAtAction(nameof(GetInfo),
                 new { id = user.Id }, user);
         }
 
         // UPDATE
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(string id, User user)
+        public async Task<IActionResult> PutInfo(string id, User user)
         {
             var existingUser = await _userService.GetByIdAsync(id);
 
